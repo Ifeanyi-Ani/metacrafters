@@ -1,19 +1,21 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.20;
 
-contract Vesting {
-    uint256 public totalSupply;
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract VestingSchedule {
 
     struct Organization {
         address organizationAddress;
         string name;
-        uint256 tokenAmount;
+        uint256 tokenSupply;
     }
 
     struct Stakeholder {
         address stakeholderAddress;
-        string stakeholderPosition;
-        uint256 vestingPeriod;
+        string position;
+        uint256 period;
         uint256 startTime;
         uint256 tokenAmount;
         uint256 claimedToken;
@@ -24,38 +26,37 @@ contract Vesting {
     mapping(address => Organization) public organizations;
     mapping(address => uint) public balances;
 
-    event NewStakeholder(uint256 startTime, uint256 vestingPeriod);
+    event NewStakeholder(uint256 startTime, uint256 period);
     event Whitelisted(uint256 time, address stakeholder);
-
-    function createOrganization(string memory _name,address _organizationAddress, uint256 _token) external {
-        organizations[_organizationAddress] = Organization({
-           organizationAddress : _organizationAddress,
-         name : _name,
-        tokenAmount:  _token
+    
+    function createOrganization(string memory _name, address _organizationAddress, uint256 _token) external {
+           organizations[_organizationAddress] = Organization({
+            organizationAddress: _organizationAddress,
+            name: _name,
+            tokenSupply: _token
         });
-
-        totalSupply += _token;
     }
+
 
     function newStakeholder(
         address _stakeholderAddress,
         string memory _position,
-        uint256 _vestingPeriod,
+        uint256 _period,
         uint256 _token
     ) external {
         require(organizations[msg.sender].organizationAddress == msg.sender, "Unauthorized");
-        require(organizations[msg.sender].tokenAmount >= _token, "cannot be greater than token");
+        require(organizations[msg.sender].tokenSupply >= _token, "cannot be greater than token");
 
         stakeholders[_stakeholderAddress] = Stakeholder({
             stakeholderAddress: _stakeholderAddress,
-            stakeholderPosition: _position, 
-            vestingPeriod: _vestingPeriod,
+            position: _position, 
+            period: _period,
             startTime: block.timestamp,
             tokenAmount: _token,
             claimedToken: 0
         });
 
-        emit NewStakeholder(block.timestamp, _vestingPeriod);
+        emit NewStakeholder(block.timestamp, _period);
     }
 
     function whitelistAddress(address _stakeholder) external {
@@ -70,7 +71,7 @@ contract Vesting {
         Stakeholder storage stakeholder = stakeholders[msg.sender];
         require(organizations[msg.sender].organizationAddress == msg.sender || 
         stakeholder.stakeholderAddress == msg.sender, "not in organisation");
-        require(block.timestamp >= stakeholder.startTime + stakeholder.vestingPeriod, "Vesting period is over");
+        require(block.timestamp >= stakeholder.startTime + stakeholder.period, "Vesting period is over");
 
         uint256 claimableTokens = stakeholder.tokenAmount - stakeholder.claimedToken;
         require(claimableTokens > 0, "Insufficient funds");
@@ -83,7 +84,8 @@ contract Vesting {
     function getClaimedToken() external view returns (uint256){
         return balances[msg.sender];
     }
-    function getStakeholderPosition(address _address) external view returns (Stakeholder memory){
+    function getposition(address _address) external view returns (Stakeholder memory){
         return stakeholders[_address];
     }
 }
+
