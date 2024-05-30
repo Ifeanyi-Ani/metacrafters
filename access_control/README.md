@@ -1,4 +1,4 @@
-# Variable Scope Explanation
+# Variable Access Control Explanation
 
 This README provides an overview of the scope of variables `a`, `b`, `c`, and `d` within the provided Cadence smart contract.
 
@@ -11,22 +11,31 @@ The `Control` contract defines a struct named `Access`, which encapsulates four 
 1. **Variable `a`:**
 
    - **Visibility:** Public (`set`)
-   - **Access Scope:** Accessible from anywhere outside the contract and within the contract itself.
-   - **Access Level:** Readable and writable from anywhere outside the contract and within the contract itself.
+   - **Reed Area:** 1, 2, 3, 4
+   - **Write Area:** 1, 2, 3, 4.
 
 2. **Variable `b`:**
 
    - **Visibility:** Public (`pub`)
-   - **Access Scope:** Accessible from anywhere outside the contract and within the contract itself.
-   - **Access Level:** Readable and writable from any context within the contract and accessible externally.
+   - **Read Area:** 1, 2, 3, 4.
+   - **Write Area:** 1.
 
 3. **Variable `c`:**
 
    - **Visibility:** Private (`access(contract)`)
-   - **Access Scope:** Accessible only within the contract.
-   - **Access Level:** Readable and writable only from within the contract. Not accessible externally or within resources.
+   - **Read Area:** 1, 2, 3.
+   - **Write Area:** 1.
 
 4. **Variable `d`:**
    - **Visibility:** Private (`access(self)`)
-   - **Access Scope:** Accessible only within the struct `Access`.
-   - **Access Level:** Readable and writable only within the `Access` struct. Not accessible externally or within resources.
+   - **Read Area:** 1.
+   - **Write Area:** 1.
+
+5. **Function `publicFunc`:**
+   - **Access Area:** 1, 2, 3, 4.
+
+6. **Function `contractFunc`:**
+   - **Access Area:** 1, 2, 3.
+
+7. **Function `privateFunc`:**
+   - **Access Area:** 1.
