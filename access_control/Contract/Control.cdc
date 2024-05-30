@@ -1,6 +1,31 @@
 access(all) contract Control {
     pub var testStruct: Access
 
+// variable a
+//   read scope  : 1,2,3,4
+//   write scope : 1,2,3,4
+
+// variable b
+//   read scope  : 1,2,3,4
+//   write scope : 1
+
+// variable c
+//   read scope  : 1,2,3
+//   write scope : 1
+
+// variable d
+//   read scope  : 1
+//   write scope : 1
+
+// function publicFunc
+//   can be called AREA : 1,2,3,4Acc
+
+// function contractFunc
+//   can be called AREA : 1,2,3
+
+// function privateFunc
+//   can be called AREA : 1
+
     pub struct Access {
 
         //
@@ -30,7 +55,23 @@ access(all) contract Control {
             /**************/
             /*** AREA 1 ***/
             /**************/
-        // we can read and write all the variable (a,b,c,d) here
+        // we can read and write all the variable here
+        self.a = "change variable a at area 1";
+        let varA = self.a;
+
+        self.b = "change variable b at area 1";
+        let varB = self.b;
+
+        self.c = "change variable c at area 1";
+        let varC = self.c;
+
+        self.d = "change variable d at area 1";
+        let varD = self.d;
+
+        self.publicFunc();
+        self.contractFunc();
+        self.privateFunc();
+    
         }
 
         init() {
@@ -48,10 +89,16 @@ access(all) contract Control {
             /**************/
             /*** AREA 2 ***/
             /**************/
-        // we can read and write all other variable here except variable d which is access(self)
-       let varA =  Control.testStruct.c
-       log(Control.testStruct.a)
 
+        Control.testStruct.a = "change variable a at area 2";
+        let varA = Control.testStruct.a;
+
+        let varB = Control.testStruct.b;
+    
+        let varC = Control.testStruct.c;
+
+        Control.testStruct.publicFunc();
+        Control.testStruct.contractFunc();
         }
 
         init() {
@@ -68,8 +115,15 @@ access(all) contract Control {
         /*** AREA 3 ****/
         /**************/
 
-      // we can read and write all other variable here except variable d which is access(self)
-       let varA =  self.testStruct.c
+        Control.testStruct.a = "change variable a at area 3";
+        let varA = self.testStruct.a;
+
+        let varB = self.testStruct.b;
+
+        let varC = self.testStruct.c;
+
+        self.testStruct.publicFunc();
+        self.testStruct.contractFunc();
     }
 
     init() {

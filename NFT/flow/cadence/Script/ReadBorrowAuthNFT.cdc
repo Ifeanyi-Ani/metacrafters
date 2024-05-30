@@ -1,5 +1,5 @@
-import NonFungibleToken from 0x05;
-import CryptoPoops from 0x06;
+import NonFungibleToken from "../Contract/NonFungibleToken.cdc"
+import CryptoPoops from "../Contract/CryptoPoops.cdc"
 
 pub fun main(acc: Address, id: UInt64) {
     let reference = getAccount(acc).getCapability(/public/Collections)
